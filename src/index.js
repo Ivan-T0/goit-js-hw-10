@@ -45,8 +45,9 @@ breedSelectEl.addEventListener("change", () => {
 
       if (breed) {
         const image = document.createElement("img");
+        
         image.src = cat.url;
-        image.width =800;
+        image.width =900;
         catInfo.appendChild(image);
 
         const infoContainer = document.createElement("div");
