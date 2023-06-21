@@ -1,14 +1,15 @@
-import { fetchBreeds,fetchCatByBreed } from '../cat-api';
+import { fetchBreeds, fetchCatByBreed } from './js/cat-api';
+document.addEventListener("DOMContentLoaded", () => {
+  
 
 const breedSelectEl = document.querySelector(".breed-select");
 const loaderEl = document.querySelector(".loader");
 const errorEl = document.querySelector(".error");
 const catInfo = document.querySelector(".cat-info");
-catInfo.style.marginTop = "20px";
 
-loaderEl.style.display = "block";
-errorEl.style.display = "none";
-breedSelectEl.style.display = "none";
+
+showLoader();
+
 
 fetchBreeds()
   .then((data) => {
@@ -19,69 +20,74 @@ fetchBreeds()
       breedSelectEl.appendChild(option);
     });
 
-    loaderEl.style.display = "none";
-    breedSelectEl.style.display = "block";
-    errorEl.style.display = "none";
+    hideLoader();
+   
   })
-
-
   .catch((error) => {
-    loaderEl.style.display = "none";
-    errorEl.style.display = "block";
-    errorEl.style.color = "red";
+    showError();
   });
 
 breedSelectEl.addEventListener("change", () => {
   const selectedBreedId = breedSelectEl.value;
-  catInfo.innerHTML = "";
-  errorEl.style.display = "none";
+  clearCatInfo();
 
-  loaderEl.style.display = "block";
-  catInfo.style.display = "none";
+  showLoader();
+  
 
   fetchCatByBreed(selectedBreedId)
     .then((cat) => {
       const breed = cat.breeds && cat.breeds.length > 0 ? cat.breeds[0] : null;
 
       if (breed) {
-        const image = document.createElement("img");
-        
-        image.src = cat.url;
-        image.width =900;
-        catInfo.appendChild(image);
-
-        const infoContainer = document.createElement("div");
-        infoContainer.style.marginLeft = "40px";
-        infoContainer.style.width = "350px";
-
-        const breedName = document.createElement("h3");
-        breedName.textContent = breed.name;
-        infoContainer.appendChild(breedName);
-
-        const description = document.createElement("p");
-        description.textContent = breed.description;
-        infoContainer.appendChild(description);
-
-        const temperament = document.createElement("p");
-        const temperamentLabel = document.createElement("strong");
-        temperamentLabel.textContent = "Temperament: ";
-        temperament.appendChild(temperamentLabel);
-
-        const temperamentText = document.createTextNode(breed.temperament);
-        temperament.appendChild(temperamentText);
-
-        infoContainer.appendChild(temperament);
-
-        catInfo.appendChild(infoContainer);
-
-
-        loaderEl.style.display = "none";
-        catInfo.style.display = "flex";
+        showCatInfo(cat);
       }
     })
     .catch((error) => {
-      loaderEl.style.display = "none";
-      errorEl.style.display = "block";
-      errorEl.style.color = "red";
+      showError();
     });
 });
+  function showLoader() {
+  loaderEl.style.display = "block";
+  errorEl.style.display = "none";
+  catInfo.style.display = "block";
+}
+
+function hideLoader() {
+  loaderEl.style.display = "none";
+}
+
+function showError() {
+  loaderEl.style.display = "none";
+  errorEl.style.display = "block";
+  errorEl.style.color = "red";
+}
+
+function clearCatInfo() {
+  catInfo.innerHTML = "";
+  errorEl.style.display = "none";
+  showLoader();
+  catInfo.style.display = "none";
+}
+
+function showCatInfo(cat) {
+  const { url, breeds } = cat;
+  const breed = breeds && breeds.length > 0 ? breeds[0] : null;
+
+  if (breed) {
+    const catHtml = `
+      <img src="${url}">
+      <div>
+        <h3>${breed.name}</h3>
+        <p>${breed.description}</p>
+        <p><strong>Temperament: </strong>${breed.temperament}</p>
+      </div>
+    `;
+
+    catInfo.innerHTML = catHtml.trim();
+
+    hideLoader();
+  }
+}
+});
+
+

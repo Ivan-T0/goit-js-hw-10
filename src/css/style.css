@@ -1,0 +1,19 @@
+
+.error {
+    color: red;
+  
+}
+
+.cat-info {
+    display: flex;
+    margin-top: 20px;
+}
+
+.cat-info img {
+    width: 450px;
+}
+
+.cat-info>div {
+    margin-left: 40px;
+    width: 350px;
+}
